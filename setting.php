@@ -22,10 +22,7 @@ mb_language('Japanese');
 mb_internal_encoding('UTF-8');
 
 // データベース
-$server = "localhost";
-$user = "root";
-$dbname = "lightbox";
-$password = '';
+$dbname = "lightbox.sqlite3";
 
 // グローバル変数
 $pdf = null;    // PDF処理用オブジェクト

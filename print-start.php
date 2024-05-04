@@ -23,15 +23,16 @@ $cur_position = $header_height;
 
 // データの印字
 $_POST["query"] = <<<QUERY
-SELECT 社員マスタ.*,コード名称マスタ.名称 as 所属名 
+SELECT 社員マスタ.*,コード名称マスタ.名称 as 所属名
     FROM 社員マスタ left outer join コード名称マスタ
     on 社員マスタ.所属 = コード名称マスタ.コード
     and コード名称マスタ.区分 = 2
 QUERY;
 
 // クエリーの実行
-$result = $mysqli->query( $_POST["query"] );
-while ( $row = $result->fetch_array( MYSQLI_BOTH ) ) {
+$statement = $pdo->prepare( $_POST["query"] );
+$statement->execute();
+while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
 
     // 初回のみヘッダを印字する
     if(  $init  ) {
@@ -85,8 +86,6 @@ while ( $row = $result->fetch_array( MYSQLI_BOTH ) ) {
 
 }
 
-$mysqli->close();
-
 // ブラウザへ PDF を出力します
 $pdf->Output("test_output.pdf", "I");
 
@@ -103,7 +102,7 @@ function print_header( $pdf ) {
 
     // ヘッダ内での印字位置コントロール
     $cur_position = $page_info['tm'];	// トップマージン
-    
+
     // ページの先頭
     $pdf->SetFont('roundedmplus2cr', '', 30);
     user_text( $pdf, 100,   $cur_position-4, "社員一覧表" );
@@ -111,7 +110,7 @@ function print_header( $pdf ) {
 
     user_text( $pdf, 224,   $cur_position, "ページ :" );
     user_text( $pdf, 250,   $cur_position, number_format($counter+1), 5, 0, "R" );
-    
+
     // データのタイトル
     $cur_position += $GLOBALS['row_height'] * 2;    // 2行進む( 1行空ける )
     user_text( $pdf, $pos,       $cur_position, "コード" );
@@ -125,7 +124,7 @@ function print_header( $pdf ) {
     user_text( $pdf, $pos += $cpos[5], $cur_position, "給与", 20, 0, "R" );
     user_text( $pdf, $pos += $cpos[6], $cur_position, "手当", 20, 0, "R" );
     user_text( $pdf, $pos += $cpos[7], $cur_position, "生年月日" );
-    
+
 }
 
 ?>
